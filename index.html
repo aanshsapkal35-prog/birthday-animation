@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Birthday ASCII Celebration</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#030305;color:#f4d5a0;overflow:hidden;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+#scene{height:100svh;width:100vw;position:relative;display:flex;align-items:center;justify-content:center}
+canvas{position:absolute;inset:0;width:100%;height:100%}
+.art{position:relative;z-index:1;text-align:center;white-space:pre;line-height:1.04;font-size:clamp(7px,1.55vw,14px);text-shadow:0 0 7px currentColor;animation:appear 2.4s ease both}
+.title{font-size:clamp(10px,2.6vw,22px);line-height:1.1;letter-spacing:.08em;color:#f6c9e3;text-shadow:0 0 8px #e879b4,0 0 20px #9b3b82;margin-bottom:5vh;animation:pop 1.2s .7s both}
+.sub{position:absolute;bottom:20px;left:16px;color:#655e70;font-size:11px}
+.timer{position:absolute;right:18px;top:18px;color:#e78bbd;font-size:12px}
+@keyframes appear{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{0%{opacity:0;transform:scale(.6)}75%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}
+</style>
+</head>
+<body>
+<div id="scene">
+<canvas id="confetti"></canvas>
+<div class="art">
+<div class="title">HAPPY<br> BIRTHDAY!</div>
+<pre id="cake"></pre>
+</div>
+<div class="timer" id="timer">✦ 00:00</div>
+<div class="sub">ascii celebration · made with love</div>
+</div>
+<script>
+const cakeArt = String.raw`
+                   .  *  .
+                    \ | /
+                     \|/
+                    ( * )
+                     | |
+                    |:::|
+                    |:::|
+                 ___|:::|___
+              .-'   :::::   '-.
+             /  .-~~~~~~~~~-.  \
+            /  /  *  *  *  * \  \
+           |  |~~~~~~~~~~~~~~~|  |
+           |  |  :::::::::::  |  |
+           |  |  :::::::::::  |  |
+           |  |_______________|  |
+           | /_________________\ |
+          /_______________________\
+         /  *   *   *   *   *   * \
+        /____________________________\
+`;
+document.getElementById('cake').textContent=cakeArt;
+const c=document.getElementById('confetti'),ctx=c.getContext('2d');
+let W,H,particles=[],start=performance.now();
+function resize(){W=c.width=innerWidth*devicePixelRatio;H=c.height=innerHeight*devicePixelRatio}
+addEventListener('resize',resize);resize();
+const colors=['#f7c56d','#ff79b9','#8de0ff','#b6ff9d','#d9a7ff','#ff966f'];
+for(let i=0;i<110;i++)particles.push({x:Math.random()*W,y:Math.random()*H,s:2+Math.random()*5,v:0.5+Math.random()*2.2,w:Math.random()*6,color:colors[i%colors.length]});
+function draw(now){
+ ctx.clearRect(0,0,W,H);
+ for(const p of particles){
+  p.y+=p.v*devicePixelRatio;p.x+=Math.sin(p.y*.006+p.w)*.7*devicePixelRatio;
+  if(p.y>H+10){p.y=-10;p.x=Math.random()*W}
+  ctx.fillStyle=p.color;ctx.globalAlpha=.75;
+  ctx.fillRect(p.x,p.y,p.s*devicePixelRatio,p.s*2*devicePixelRatio);
+ }
+ ctx.globalAlpha=1;
+ document.getElementById('timer').textContent='✦ '+((now-start)/1000).toFixed(1)+'s';
+ requestAnimationFrame(draw)
+}
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>
